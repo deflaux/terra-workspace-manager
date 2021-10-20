@@ -1132,6 +1132,27 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
 
+  /api/workspaces/v1/{workspaceId}/resources/controlled/azure/network:
+    parameters:
+      - $ref: '#/components/parameters/WorkspaceId'
+    post:
+      summary: Create a new controlled Azure Network
+      operationId: createAzureNetwork
+      tags: [ ControlledAzureResource ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateControlledAzureNetworkRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/CreateControlledAzureNetworkResponse'
+        '403':
+          $ref: '#/components/responses/PermissionDenied'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
   /api/workspaces/v1/{workspaceId}/resources/controlled/gcp/bqdatasets:
     parameters:
     - $ref: '#/components/parameters/WorkspaceId'
@@ -1965,6 +1986,15 @@ components:
         azureIp:
           $ref: '#/components/schemas/AzureIpCreationParameters'
 
+    CreateControlledAzureNetworkRequestBody:
+      description: Payload for requesting a new controlled Azure Network resource.
+      type: object
+      properties:
+        common:
+          $ref: '#/components/schemas/ControlledResourceCommonFields'
+        azureNetwork:
+          $ref: '#/components/schemas/AzureNetworkCreationParameters'
+
     CreateControlledGcpGcsBucketRequestBody:
       description: Payload for requesting a new controlled GCS bucket resource.
       type: object
@@ -2112,6 +2142,22 @@ components:
             It is best to look at the Region class definition for valid strings (e.g. 'eastus' == Region.US_EAST.toString())
           type: string
 
+    AzureNetworkCreationParameters:
+      description: >-
+        Network-specific properties to be set on creation. These are a subset of the values
+        accepted by the azure resource API
+      type: object
+      required: [ name, region ] # TODO
+      properties:
+        name:
+          description: A valid Network name per https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules
+          type: string
+        region:
+          description: |
+            A valid region string representation per https://docs.microsoft.com/en-us/dotnet/api/microsoft.azure.management.resourcemanager.fluent.core.region.
+            It is best to look at the Region class definition for valid strings (e.g. 'eastus' == Region.US_EAST.toString())
+          type: string
+
     CreatedControlledAzureIp:
       description: Response payload for requesting a new azure IP
       type: object
@@ -2122,6 +2168,17 @@ components:
           format: uuid
         azureIp:
           $ref: '#/components/schemas/AzureIpResource'
+
+    CreatedControlledAzureNetwork:
+      description: Response payload for requesting a new azure network
+      type: object
+      properties:
+        resourceId:
+          description: UUID of a newly-created resource.
+          type: string
+          format: uuid
+        azureNetwork:
+          $ref: '#/components/schemas/AzureNetworkResource'
 
     GcpGcsBucketCreationParameters:
       description: >-
@@ -2806,6 +2863,18 @@ components:
           description: Azure region of created ip
           type: string
 
+    AzureNetworkAttributes:
+      description: >-
+        Network properties included in post-creation get and update. Others must be retrieved from Azure using the name.
+      type: object
+      properties:
+        networkName:
+          description: Name of created network (not the resource name).
+          type: string
+        region:
+          description: Azure region of created Network
+          type: string
+
     GcpGcsBucketAttributes:
       description: >-
         Bucket properties included in post-creation, get, and update. Others must be
@@ -2837,6 +2906,17 @@ components:
           $ref: '#/components/schemas/ResourceMetadata'
         attributes:
           $ref: '#/components/schemas/AzureIpAttributes'
+
+    AzureNetworkResource:
+      type: object
+      description: Description of an Azure Network
+      required: [ metadata, attributes ]
+      properties:
+        metadata:
+          description: the resource metadata common to all resources
+          $ref: '#/components/schemas/ResourceMetadata'
+        attributes:
+          $ref: '#/components/schemas/AzureNetworkAttributes'
 
     GcpAiNotebookInstanceAttributes:
       description: >-
@@ -2882,6 +2962,8 @@ components:
           $ref: '#/components/schemas/GcpAiNotebookInstanceAttributes'
         azureIp:
           $ref: '#/components/schemas/AzureIpAttributes'
+        azureNetwork:
+          $ref: '#/components/schemas/AzureNetworkAttributes'
 
     ResourceDescription:
       type: object
@@ -2963,6 +3045,7 @@ components:
         - DATA_REPO_SNAPSHOT
         - GCS_BUCKET
         - AZURE_IP
+        - AZURE_NETWORK
 
     StewardshipType:
       description: Enum containing valid stewardship types. Used for enumeration
@@ -3050,6 +3133,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/AzureIpResource'
+
+    CreateControlledAzureNetworkResponse:
+      description: Response to create controlled azure network
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/CreatedControlledAzureNetwork'
 
     CreatedControlledGcpGcsBucketResponse:
       description: Response to Create controlled Gcs bucket

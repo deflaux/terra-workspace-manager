@@ -5,15 +5,7 @@ import bio.terra.common.exception.ValidationException;
 import bio.terra.workspace.common.utils.ControllerUtils;
 import bio.terra.workspace.db.exception.InvalidMetadataException;
 import bio.terra.workspace.generated.controller.ControlledAzureResourceApi;
-import bio.terra.workspace.generated.model.ApiAccessScope;
-import bio.terra.workspace.generated.model.ApiAzureIpResource;
-import bio.terra.workspace.generated.model.ApiControlledResourceCommonFields;
-import bio.terra.workspace.generated.model.ApiCreateControlledAzureIpRequestBody;
-import bio.terra.workspace.generated.model.ApiCreatedControlledAzureIp;
-import bio.terra.workspace.generated.model.ApiDeleteControlledAzureIpRequest;
-import bio.terra.workspace.generated.model.ApiDeleteControlledAzureIpResult;
-import bio.terra.workspace.generated.model.ApiJobControl;
-import bio.terra.workspace.generated.model.ApiPrivateResourceUser;
+import bio.terra.workspace.generated.model.*;
 import bio.terra.workspace.service.iam.AuthenticatedUserRequest;
 import bio.terra.workspace.service.iam.AuthenticatedUserRequestFactory;
 import bio.terra.workspace.service.iam.SamRethrow;
@@ -97,6 +89,12 @@ public class ControlledAzureResourceApiController implements ControlledAzureReso
             .resourceId(createdIp.getResourceId())
             .azureIp(createdIp.toApiResource());
     return new ResponseEntity<>(response, HttpStatus.OK);
+  }
+
+  @Override
+  public ResponseEntity<ApiCreatedControlledAzureNetwork> createAzureNetwork(UUID workspaceId, ApiCreateControlledAzureNetworkRequestBody body) {
+    final AuthenticatedUserRequest userRequest = getAuthenticatedInfo();
+    return ControlledAzureResourceApi.super.createAzureNetwork(workspaceId, body);
   }
 
   @Override
