@@ -4,8 +4,8 @@ import bio.terra.common.exception.InconsistentFieldsException;
 import bio.terra.common.exception.MissingRequiredFieldException;
 import bio.terra.workspace.db.DbSerDes;
 import bio.terra.workspace.db.model.DbResource;
-import bio.terra.workspace.generated.model.ApiAzureIpAttributes;
-import bio.terra.workspace.generated.model.ApiAzureIpResource;
+import bio.terra.workspace.generated.model.ApiAzureNetworkAttributes;
+import bio.terra.workspace.generated.model.ApiAzureNetworkResource;
 import bio.terra.workspace.service.resource.ValidationUtils;
 import bio.terra.workspace.service.resource.WsmResourceType;
 import bio.terra.workspace.service.resource.model.CloningInstructions;
@@ -55,7 +55,7 @@ public class ControlledAzureNetworkResource extends ControlledResource {
     }
 
     public String getNetworkName() {
-        returnNetworkName;
+        return networkName;
     }
 
     public String getRegion() {
@@ -63,7 +63,7 @@ public class ControlledAzureNetworkResource extends ControlledResource {
     }
 
     public ApiAzureNetworkAttributes toApiAttributes() {
-        return new ApiAzureNetworkAttributes().NetworkName(getNetworkName()).region(region.toString());
+        return new ApiAzureNetworkAttributes().networkName(getNetworkName()).region(region.toString());
     }
 
     public ApiAzureNetworkResource toApiResource() {
@@ -77,24 +77,24 @@ public class ControlledAzureNetworkResource extends ControlledResource {
 
     @Override
     public String attributesToJson() {
-        return DbSerDes.toJson(new ControlledAzureIpAttributes(getIpName(), getRegion()));
+        return DbSerDes.toJson(new ControlledAzureNetworkAttributes(getNetworkName(), getRegion()));
     }
 
     @Override
     public void validate() {
         super.validate();
-        if (getResourceType() != WsmResourceType.AZURE_IP) {
-            throw new InconsistentFieldsException("Expected AZURE_IP");
+        if (getResourceType() != WsmResourceType.AZURE_NETWORK) {
+            throw new InconsistentFieldsException("Expected AZURE_NETWORK");
         }
-        if (getIpName() == null) {
+        if (getNetworkName() == null) {
             throw new MissingRequiredFieldException(
-                    "Missing required ipName field for ControlledAzureIP.");
+                    "Missing required networkName field for ControlledAzureNetwork.");
         }
         if (getRegion() == null) {
             throw new MissingRequiredFieldException(
-                    "Missing required region field for ControlledAzureIP.");
+                    "Missing required region field for ControlledAzureNetwork.");
         }
-        ValidationUtils.validateIpName(getIpName());
+        ValidationUtils.validateNetworkName(getNetworkName());
     }
 
     @Override
@@ -103,20 +103,20 @@ public class ControlledAzureNetworkResource extends ControlledResource {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
 
-        ControlledAzureIpResource that = (ControlledAzureIpResource) o;
+        ControlledAzureNetworkResource that = (ControlledAzureNetworkResource) o;
 
-        return ipName.equals(that.getIpName());
+        return networkName.equals(that.getNetworkName());
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + ipName.hashCode();
+        result = 31 * result + networkName.hashCode();
         return result;
     }
 
-    public static ControlledAzureIpResource.Builder builder() {
-        return new ControlledAzureIpResource.Builder();
+    public static ControlledAzureNetworkResource.Builder builder() {
+        return new ControlledAzureNetworkResource.Builder();
     }
 
     public static class Builder {
@@ -128,62 +128,62 @@ public class ControlledAzureNetworkResource extends ControlledResource {
         private String assignedUser;
         private AccessScopeType accessScope;
         private ManagedByType managedBy;
-        private String ipName;
+        private String networkName;
         private String region;
 
-        public ControlledAzureIpResource.Builder workspaceId(UUID workspaceId) {
+        public ControlledAzureNetworkResource.Builder workspaceId(UUID workspaceId) {
             this.workspaceId = workspaceId;
             return this;
         }
 
-        public ControlledAzureIpResource.Builder resourceId(UUID resourceId) {
+        public ControlledAzureNetworkResource.Builder resourceId(UUID resourceId) {
             this.resourceId = resourceId;
             return this;
         }
 
-        public ControlledAzureIpResource.Builder name(String name) {
+        public ControlledAzureNetworkResource.Builder name(String name) {
             this.name = name;
             return this;
         }
 
-        public ControlledAzureIpResource.Builder description(String description) {
+        public ControlledAzureNetworkResource.Builder description(String description) {
             this.description = description;
             return this;
         }
 
-        public ControlledAzureIpResource.Builder cloningInstructions(
+        public ControlledAzureNetworkResource.Builder cloningInstructions(
                 CloningInstructions cloningInstructions) {
             this.cloningInstructions = cloningInstructions;
             return this;
         }
 
-        public ControlledAzureIpResource.Builder ipName(String ipName) {
-            this.ipName = ipName;
+        public ControlledAzureNetworkResource.Builder networkName(String networkName) {
+            this.networkName = networkName;
             return this;
         }
 
-        public ControlledAzureIpResource.Builder region(String region) {
+        public ControlledAzureNetworkResource.Builder region(String region) {
             this.region = region;
             return this;
         }
 
-        public ControlledAzureIpResource.Builder assignedUser(String assignedUser) {
+        public ControlledAzureNetworkResource.Builder assignedUser(String assignedUser) {
             this.assignedUser = assignedUser;
             return this;
         }
 
-        public ControlledAzureIpResource.Builder accessScope(AccessScopeType accessScope) {
+        public ControlledAzureNetworkResource.Builder accessScope(AccessScopeType accessScope) {
             this.accessScope = accessScope;
             return this;
         }
 
-        public ControlledAzureIpResource.Builder managedBy(ManagedByType managedBy) {
+        public ControlledAzureNetworkResource.Builder managedBy(ManagedByType managedBy) {
             this.managedBy = managedBy;
             return this;
         }
 
-        public ControlledAzureIpResource build() {
-            return new ControlledAzureIpResource(
+        public ControlledAzureNetworkResource build() {
+            return new ControlledAzureNetworkResource(
                     workspaceId,
                     resourceId,
                     name,
@@ -192,7 +192,7 @@ public class ControlledAzureNetworkResource extends ControlledResource {
                     assignedUser,
                     accessScope,
                     managedBy,
-                    ipName,
+                    networkName,
                     region);
         }
     }

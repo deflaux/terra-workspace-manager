@@ -59,6 +59,17 @@ public class ValidationUtils {
     }
   }
 
+  // TODO: find actual pattern for network
+  public static void validateNetworkName(String name) {
+    Pattern pattern = Pattern.compile("^[a-zA-Z0-9][a-zA-Z0-9-_.]{0,78}[a-zA-Z0-9_]$");
+
+    if (!pattern.matcher(name).matches()) {
+      logger.warn("Invalid Network name {}", name);
+      throw new InvalidReferenceException(
+              "Invalid Azure Network name specified. See documentation for full specification https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/resource-name-rules.");
+    }
+  }
+
   public static void validateBqDatasetName(String name) {
     if (StringUtils.isEmpty(name) || !BQ_DATASET_NAME_VALIDATION_PATTERN.matcher(name).matches()) {
       logger.warn("Invalid BQ name {}", name);
