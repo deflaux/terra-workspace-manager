@@ -1,7 +1,7 @@
 # This workflow runs the WSM full regression tests, including perf, integration, and
 # resilience suites.
 
-name: Alpha Integration 1
+name: Alpha Integration 2
 
 on:
   push
