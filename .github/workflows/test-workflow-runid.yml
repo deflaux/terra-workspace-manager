@@ -1,7 +1,7 @@
 # This workflow runs the WSM full regression tests, including perf, integration, and
 # resilience suites.
 
-name: Workflow Run
+name: Workflow Run 5
 
 on:
   push
