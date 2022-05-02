@@ -1,0 +1,20 @@
+# This workflow runs the WSM full regression tests, including perf, integration, and
+# resilience suites.
+
+name: Nightly Tests
+
+on:
+  push
+
+jobs:
+  workflow-runid:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      # Sparse check out terra-helmfile repo version directories
+      - name: Dump run id
+        run: |
+          echo ${{ github.run_id }}
