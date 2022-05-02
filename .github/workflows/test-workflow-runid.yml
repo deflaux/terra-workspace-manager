@@ -14,9 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      # Sparse check out terra-helmfile repo version directories
-      - name: Dump run id
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
+      # Get url of this workflow run
+      - name: Url of workflow run
         run: |
-          echo ${{ github.event.repository.html_url }}/${{ github.run_id }}
+          echo ${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}
