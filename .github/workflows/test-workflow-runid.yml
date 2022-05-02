@@ -1,7 +1,7 @@
 # This workflow runs the WSM full regression tests, including perf, integration, and
 # resilience suites.
 
-name: Nightly Tests
+name: Workflow Run
 
 on:
   push
@@ -16,5 +16,7 @@ jobs:
 
       # Sparse check out terra-helmfile repo version directories
       - name: Dump run id
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
         run: |
-          echo ${{ github.run_id }}
+          echo "$GITHUB_CONTEXT"
