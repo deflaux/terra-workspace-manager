@@ -18,3 +18,5 @@ jobs:
       - name: Url of workflow run
         run: |
           echo ${{ github.event.repository.html_url }}/actions/runs/${{ github.run_id }}
+          echo ${{ env.GITHUB_RUN_ID }}
+          echo ${{ env.GITHUB_SERVER_URL }}
