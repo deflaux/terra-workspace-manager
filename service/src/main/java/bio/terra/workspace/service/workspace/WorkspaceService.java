@@ -148,6 +148,20 @@ public class WorkspaceService {
   }
 
   /**
+   * Returns whether a user can read a workspace.
+   */
+  @Traced
+  public boolean canReadWorkspace(
+          UUID workspaceUuid, String userToCheckAccessFor, AuthenticatedUserRequest userRequest) {
+    return SamRethrow.onInterrupted(() -> samService.userIsAuthorized(
+            SamConstants.SamResource.WORKSPACE,
+            workspaceUuid.toString(),
+            SamConstants.SamWorkspaceAction.READ,
+            userToCheckAccessFor,
+            userRequest), "userIsAuthorized");
+  }
+
+  /**
    * List all workspaces a user has read access to.
    *
    * @param userRequest Authentication object for the caller

@@ -78,7 +78,7 @@ workspace:
     staleness-threshold-seconds: 125
 
   workspace-database:
-    initialize-on-start: ${env.db.init}
+    initialize-on-start: false
     password: ${env.db.ws.pass}
     upgrade-on-start: true
     uri: ${env.db.host}/${env.db.ws.name}

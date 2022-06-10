@@ -7,6 +7,7 @@ import bio.terra.stairway.exception.RetryException;
 import bio.terra.workspace.service.iam.AuthenticatedUserRequest;
 import bio.terra.workspace.service.iam.SamService;
 import bio.terra.workspace.service.iam.model.SamConstants;
+import bio.terra.workspace.service.workspace.WorkspaceService;
 import bio.terra.workspace.service.workspace.model.Workspace;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -19,14 +20,16 @@ import org.slf4j.LoggerFactory;
 public class CreateWorkspaceAuthzStep implements Step {
 
   private final SamService samService;
+  private final WorkspaceService workspaceService;
   private final AuthenticatedUserRequest userRequest;
   private final Workspace workspace;
 
   private final Logger logger = LoggerFactory.getLogger(CreateWorkspaceAuthzStep.class);
 
   public CreateWorkspaceAuthzStep(
-      Workspace workspace, SamService samService, AuthenticatedUserRequest userRequest) {
+      Workspace workspace, SamService samService, WorkspaceService workspaceService, AuthenticatedUserRequest userRequest) {
     this.samService = samService;
+    this.workspaceService = workspaceService;
     this.userRequest = userRequest;
     this.workspace = workspace;
   }
@@ -38,7 +41,7 @@ public class CreateWorkspaceAuthzStep implements Step {
     // Even though WSM should own this resource, Stairway steps can run multiple times, so it's
     // possible this step already created the resource. If WSM can either read the existing Sam
     // resource or create a new one, this is considered successful.
-    if (!canReadExistingWorkspace(workspace.getWorkspaceId())) {
+    if (!workspaceService.canReadWorkspace(workspace.getWorkspaceId(), userRequest.getEmail(), userRequest)) {
       samService.createWorkspaceWithDefaults(userRequest, workspace.getWorkspaceId());
     }
     return StepResult.getStepResultSuccess();
@@ -48,13 +51,5 @@ public class CreateWorkspaceAuthzStep implements Step {
   public StepResult undoStep(FlightContext flightContext) throws InterruptedException {
     samService.deleteWorkspace(userRequest, workspace.getWorkspaceId());
     return StepResult.getStepResultSuccess();
-  }
-
-  private boolean canReadExistingWorkspace(UUID workspaceUuid) throws InterruptedException {
-    return samService.isAuthorized(
-        userRequest,
-        SamConstants.SamResource.WORKSPACE,
-        workspaceUuid.toString(),
-        SamConstants.SamWorkspaceAction.READ);
   }
 }

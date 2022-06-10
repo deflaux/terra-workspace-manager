@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -136,6 +137,26 @@ class WorkspaceServiceTest extends BaseConnectedTest {
   @AfterEach
   public void resetFlightDebugInfo() {
     jobService.setFlightDebugInfoForTest(null);
+  }
+
+
+  @Test
+  void canReadWorkspace_returnsFalse() {
+    UUID workspaceDoesNotExist = UUID.randomUUID();
+
+    assertFalse(
+            workspaceService.canReadWorkspace(workspaceDoesNotExist, USER_REQUEST.getEmail(), USER_REQUEST));
+  }
+
+  @Test
+  void canReadWorkspace_returnsTrue() {
+    Workspace request = defaultRequestBuilder(UUID.randomUUID()).build();
+    workspaceService.createWorkspace(request, USER_REQUEST);
+try {
+    Thread.sleep(60000);
+} catch (Exception e) {}
+    assertTrue(
+            workspaceService.canReadWorkspace(request.getWorkspaceId(), USER_REQUEST.getEmail(), USER_REQUEST));
   }
 
   @Test

@@ -52,7 +52,7 @@ public class RemoveUserFromWorkspaceFlight extends Flight {
         samRetry);
     addStep(
         new CheckUserStillInWorkspaceStep(
-            workspaceUuid, userToRemove, appContext.getSamService(), userRequest),
+            workspaceUuid, userToRemove, appContext.getWorkspaceService(), userRequest),
         samRetry);
     addStep(
         new ClaimUserPrivateResourcesStep(

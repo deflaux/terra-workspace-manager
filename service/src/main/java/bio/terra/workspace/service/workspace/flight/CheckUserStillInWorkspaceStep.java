@@ -6,25 +6,24 @@ import bio.terra.stairway.Step;
 import bio.terra.stairway.StepResult;
 import bio.terra.stairway.exception.RetryException;
 import bio.terra.workspace.service.iam.AuthenticatedUserRequest;
-import bio.terra.workspace.service.iam.SamService;
-import bio.terra.workspace.service.iam.model.SamConstants;
+import bio.terra.workspace.service.workspace.WorkspaceService;
 import bio.terra.workspace.service.workspace.flight.WorkspaceFlightMapKeys.ControlledResourceKeys;
 import java.util.UUID;
 
 public class CheckUserStillInWorkspaceStep implements Step {
 
   private final UUID workspaceUuid;
-  private final SamService samService;
+  private final WorkspaceService workspaceService;
   private final AuthenticatedUserRequest userRequest;
   private final String removedUserEmail;
 
   public CheckUserStillInWorkspaceStep(
       UUID workspaceUuid,
       String removedUserEmail,
-      SamService samService,
+      WorkspaceService workspaceService,
       AuthenticatedUserRequest userRequest) {
     this.workspaceUuid = workspaceUuid;
-    this.samService = samService;
+    this.workspaceService = workspaceService;
     this.userRequest = userRequest;
     this.removedUserEmail = removedUserEmail;
   }
@@ -32,10 +31,8 @@ public class CheckUserStillInWorkspaceStep implements Step {
   @Override
   public StepResult doStep(FlightContext context) throws InterruptedException, RetryException {
     boolean userCanReadWorkspace =
-        samService.userIsAuthorized(
-            SamConstants.SamResource.WORKSPACE,
-            workspaceUuid.toString(),
-            SamConstants.SamWorkspaceAction.READ,
+        workspaceService.canReadWorkspace(
+            workspaceUuid,
             removedUserEmail,
             userRequest);
     FlightMap workingMap = context.getWorkingMap();

@@ -26,12 +26,12 @@ public class WorkspaceCreateFlight extends Flight {
     switch (workspace.getWorkspaceStage()) {
       case MC_WORKSPACE:
         addStep(
-            new CreateWorkspaceAuthzStep(workspace, appContext.getSamService(), userRequest),
+            new CreateWorkspaceAuthzStep(workspace, appContext.getSamService(), appContext.getWorkspaceService(), userRequest),
             RetryRules.shortExponential());
         break;
       case RAWLS_WORKSPACE:
         addStep(
-            new CheckSamWorkspaceAuthzStep(workspace, appContext.getSamService(), userRequest),
+            new CheckSamWorkspaceAuthzStep(workspace, appContext.getWorkspaceService(), userRequest),
             RetryRules.shortExponential());
         break;
       default:
